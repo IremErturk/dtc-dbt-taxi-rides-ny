@@ -9,6 +9,7 @@ sources:
       tables:
         - name: green_tripdata
         - name: yellow_tripdata
+        - name: external_fhv_tripdata_2019
          # freshness:
            # error_after: {count: 6, period: hour}
 
@@ -195,3 +196,44 @@ models:
             description: Total amount of all tolls paid in trip.
           - name: Total_amount 
             description: The total amount charged to passengers. Does not include cash tips.
+
+    - name: fhv_tripdata
+      description: > 
+        The For-Hire Vehicle (“FHV”) trip records include fields capturing the dispatching base license number 
+        and the pick-up date, time, and taxi zone location ID (shape file below).
+      columns:
+          - name: dispatching_base_num
+            description: The TLC Base License Number of the base that dispatched the trip
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+          - name: affiliated_base_number 
+            description: xx
+            tests:
+                - not_null:
+                    severity: warn
+          - name: pickup_datetime 
+            description: Pickup_datetime The date and time of the trip pick-up.
+          - name: dropoff_datetime 
+            description: The date and time of the trip dropoff.
+          - name: pickup_locationid 
+            description: TLC Taxi Zone in which the trip began.
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: dropoff_locationid 
+            description: TLC Taxi Zone in which the trip ended.
+            tests:
+              - relationships:
+                  to: ref('taxi_zone_lookup')
+                  field: locationid
+                  severity: warn
+          - name: sr_flag 
+            description: >
+                Indicates if the trip was a part of a shared ride chain offered
+                by a High Volume FHV company (e.g. Uber Pool, Lyft Line).
+                For shared trips, the value is 1. For non-shared rides, this field is null.
