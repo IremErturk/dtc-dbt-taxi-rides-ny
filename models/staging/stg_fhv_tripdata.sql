@@ -2,13 +2,11 @@
 
 with tripdata as 
 (
-  select * from {{ source('staging','external_fhv_tripdata') }}
-  where Affiliated_base_number is not null 
+  select * from {{ source('staging','external_fhv_tripdata_2019') }}
 )
 select
     -- identifiers
     cast(dispatching_base_num	as string) as dispatching_base_num,
-    cast(Affiliated_base_number	as string) as affiliated_base_number,
 
     -- timestamps
     cast(pickup_datetime	 as timestamp) as pickup_datetime,
